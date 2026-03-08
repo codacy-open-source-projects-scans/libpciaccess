@@ -47,6 +47,7 @@ parse_string_to_decodes_rsrc(char *input, int *vga_count, struct pci_slot_match 
 {
     char *tok;
     char *input_sp = NULL, *count_sp, *pci_sp;
+    unsigned long ul;
     char tmp[32];
 
     tok = strtok_r(input,",",&input_sp);
@@ -63,9 +64,11 @@ parse_string_to_decodes_rsrc(char *input, int *vga_count, struct pci_slot_match 
     if (!tok)
         goto fail;
 
-    *vga_count = strtoul(tok, NULL, 10);
-    if (*vga_count == LONG_MAX)
+    errno = 0;
+    ul = strtoul(tok, NULL, 10);
+    if ((ul >= INT_MAX) || (errno != 0))
         goto fail;
+    *vga_count = (int) ul;
 
 #ifdef DEBUG
     fprintf(stderr,"vga count is %d\n", *vga_count);
